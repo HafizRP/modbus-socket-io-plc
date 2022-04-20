@@ -14,6 +14,13 @@ export default new Vuex.Store({
       temp: null,
       press: null,
       status: false,
+      port: {
+        valve1: false,
+        cwr: false,
+        cwr: false,
+        steam: false,
+        steamLed: false,
+      },
     },
   },
   mutations: {
@@ -27,6 +34,19 @@ export default new Vuex.Store({
 
     setStatus(state, status) {
       state.data.status = status;
+    },
+
+    setValve(state, valve) {
+      state.data.port.valve1 = valve;
+    },
+    setCWR(state, CWR) {
+      state.data.port.cwr = CWR;
+    },
+    setSteam(state, steam) {
+      state.data.port.steam = steam;
+    },
+    setSteamLed(state, steamLed) {
+      state.data.port.steamLed = steamLed;
     },
   },
   actions: {
@@ -52,6 +72,24 @@ export default new Vuex.Store({
       });
     },
 
+    valve1({ dispatch }) {
+      socket.on("valve1", (data) => {
+        try {
+          dispatch("getValve", data);
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    },
+
+    CWR({ dispatch }) {
+      socket.on("valve2", (data) => {
+        try {
+          dispatch("getCWR", data);
+        } catch (error) {}
+      });
+    },
+
     getTemp({ commit }, temp) {
       commit("setTemp", temp);
     },
@@ -62,6 +100,19 @@ export default new Vuex.Store({
 
     getStatus({ commit }, status) {
       commit("setStatus", status);
+    },
+
+    getValve({ commit }, valve) {
+      commit("setValve", valve);
+    },
+    getCWR({ commit }, CWR) {
+      commit("setCWR", CWR);
+    },
+    getSteam({ commit }, steam) {
+      commit("setSteam", steam);
+    },
+    getSteamLed({ commit }, steamLed) {
+      commit("setSteamLed"), steamLed;
     },
   },
   getters: {

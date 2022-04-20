@@ -3,8 +3,9 @@ const Modbus = require("jsmodbus");
 const net = require("net");
 const socket = new net.Socket();
 const client = new Modbus.client.TCP(socket, 1);
+client.setTimeout = 2000;
 const options = {
-  host: "127.0.0.1",
+  host: "10.10.10.10",
   port: 502,
 };
 
@@ -12,7 +13,6 @@ const options = {
 const express = require("express");
 const app = express();
 let retrying;
-const cors = require("cors");
 
 // Socket IO Instance
 const http = require("http");
@@ -67,22 +67,56 @@ socket.on("close", async () => {
   // Trying to reconnect
 });
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+var lock = false;
 // Compile data and push it to front-end
 async function data() {
   retrying = false;
-  var inc = null;
   try {
-    setInterval(async function () {
-      client.writeSingleRegister(1 - 1, inc);
-      client.readHoldingRegisters(1 - 1, 6).then(function (resp) {
-        io.emit("data", resp.response.body.values);
-        io.emit("data1", resp.response.body.values[0]);
-        io.emit("data2", resp.response.body.values[1]);
-        inc++;
-        io.emit("status", "connected");
-      });
-    }, 1000);
-  } catch (error) {}
+    setInterval(function () {
+      if (lock === false) {
+        lock = true;
+        // client.writeSingleRegister(1 - 1, inc);
+        client
+          .readCoils(17 - 1, 1)
+          .then((result) => {
+            // console.log(Boolean(result.response.body.values[0]));
+            io.emit("valve1", Boolean(result.response.body.values[0]));
+          })
+          .catch((err) => {
+            retrying = true;
+            console.log("read plc");
+            console.log(err);
+          });
+        client
+          .readCoils(18 - 1, 1)
+          .then((result) => {
+            console.log(Boolean(result.response.body.values[0]));
+            io.emit("valve2", Boolean(result.response.body.values[0]));
+          })
+          .catch((err) => {
+            retrying = true;
+          });
+
+        client.readHoldingRegisters(1 - 1, 6).then(function (resp) {
+          // console.log(resp.response.body.values[0]);
+          io.emit("data", resp.response.body.values);
+          io.emit("data1", resp.response.body.values[0]);
+          io.emit("data2", resp.response.body.values[1]);
+          io.emit("status", "connected");
+        });
+        lock = false;
+      }
+    }, 100);
+  } catch (error) {
+    retrying = true;
+    console.log(error);
+  }
 }
 
 // Connection ended
@@ -99,6 +133,5 @@ socket.connect(options);
 connect();
 
 server.listen(3000, () => {
-  retrying = false;
   console.log("listening on *:3000");
 });

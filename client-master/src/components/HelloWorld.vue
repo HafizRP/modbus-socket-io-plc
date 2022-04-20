@@ -60,20 +60,28 @@
           <div>
             <!-- CCWR -->
             <button
-              v-bind:class="ccwr ? 'btn-success btn-sm' : 'btn-danger btn-sm'"
+              v-bind:class="
+                reaktorData.port.valve1
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
+              "
               style="position: absolute; left: 80px; top: 15px; z-index: 4"
               disabled
             >
-              {{ ccwr ? "Open" : "Close" }}
+              {{ reaktorData.port.valve1 ? "Open" : "Close" }}
             </button>
 
             <!-- CW-R -->
             <button
-              v-bind:class="cwr ? 'btn-success btn-sm' : 'btn-danger btn-sm'"
+              v-bind:class="
+                reaktorData.port.cwr
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
+              "
               style="position: absolute; left: 80px; top: 120px; z-index: 1"
               disabled
             >
-              {{ cwr ? "Open" : "Close" }}
+              {{ reaktorData.port.cwr ? "Open" : "Close" }}
             </button>
 
             <!-- STEAM -->
@@ -191,26 +199,37 @@
 </template>
 
 <script>
+import io from "socket.io-client";
+
+var socket = io("http://localhost:3000");
+
 export default {
   name: "HelloWorld",
   data() {
     return {
-      ccwr: true,
-      cwr: true,
-      steam: false,
-      steamIndicator: false,
-      cw: false,
-      cwIndicator: false,
-      ccw: false,
-      ccwIndicator: false,
-      drain: true,
-      drain2: true,
-      drainIndicator: false,
-      steamIndicator: true,
+      // ccwr: true,
+      // cwr: true,
+      // steam: false,
+      // steamIndicator: false,
+      // cw: false,
+      // cwIndicator: false,
+      // ccw: false,
+      // ccwIndicator: false,
+      // drain: true,
+      // drain2: true,
+      // drainIndicator: false,
+      // steamIndicator: true,
     };
   },
 
   methods: {},
+
+  created() {
+    this.$store.dispatch("valve1");
+    this.$store.dispatch("CWR");
+  },
+
+  mounted() {},
 
   computed: {
     reaktorData() {

@@ -54,6 +54,27 @@ export default new Vuex.Store({
     setSteamLed(state, steamLed) {
       state.data.port.steamLed = steamLed;
     },
+    setCCW(state, CCW) {
+      state.data.port.ccw = CCW;
+    },
+    setCCWLed(state, CCWLed) {
+      state.data.port.ccwLed = CCWLed;
+    },
+    setCW(state, CW) {
+      state.data.port.cw = CW;
+    },
+    setCWLed(state, CWLed) {
+      state.data.port.cwLed = CWLed;
+    },
+    setDrainTop(state, drainTop) {
+      state.data.port.drainTop = drainTop;
+    },
+    setDrainBottom(state, drainBottom) {
+      state.data.port.drainBottom = drainBottom;
+    },
+    setDrainLed(state, drainLed) {
+      state.data.port.drainLed = drainLed;
+    },
   },
   actions: {
     data({ dispatch }) {
@@ -118,7 +139,22 @@ export default new Vuex.Store({
       commit("setSteam", steam);
     },
     getSteamLed({ commit }, steamLed) {
-      commit("setSteamLed"), steamLed;
+      commit("setSteamLed", steamLed);
+    },
+    getCW({ commit }, CW) {
+      commit("setCW", CW);
+    },
+    getCWLed({ commit }, CWLed) {
+      commit("setCWLed", CWLed);
+    },
+    getDrainTop({ commit }, drainTop) {
+      commit("setDrainTop", drainTop);
+    },
+    getDrainBottom({ commit }, drainBottom) {
+      commit("setDrainBottom", drainBottom);
+    },
+    getDrainLed({ commit }, drainLed) {
+      commit("setDrainLed", drainLed);
     },
   },
   getters: {

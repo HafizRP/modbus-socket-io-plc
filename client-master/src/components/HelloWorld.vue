@@ -20,11 +20,9 @@
           <span class="centered-noborder temptext text-center"
             >Temperature</span
           >
-          <Transition>
-            <h4 class="centered text-body temp text-center">
-              {{ reaktorData.temp }} °C
-            </h4>
-          </Transition>
+          <h4 class="centered text-body temp text-center">
+            {{ reaktorData.temp }} °C
+          </h4>
 
           <!-- Pressure -->
           <div class="v2">
@@ -59,8 +57,26 @@
         /> -->
 
           <!-- Buttons -->
-          <div v-if="reaktorData.status">
+          <div>
             <!-- CCWR -->
+            <!-- <img
+              src="../assets/arrow.png"
+              alt=""
+              style="position: absolute; left: 162px; top: 15px; z-index: 4"
+              width="40px"
+              v-if="reaktorData.port.valve1"
+            /> -->
+            <div
+              class="arrow-1"
+              style="
+                position: absolute;
+                left: 240px;
+                top: 25px;
+                z-index: 4;
+                transform: rotate(360deg);
+              "
+              v-if="reaktorData.port.valve1"
+            ></div>
             <button
               v-bind:class="
                 reaktorData.port.valve1
@@ -74,6 +90,17 @@
             </button>
 
             <!-- CW-R -->
+            <div
+              class="arrow-1"
+              style="
+                position: absolute;
+                left: 240px;
+                top: 130px;
+                z-index: 1;
+                transform: rotate(360deg);
+              "
+              v-if="reaktorData.port.cwr"
+            ></div>
             <button
               v-bind:class="
                 reaktorData.port.cwr
@@ -87,6 +114,17 @@
             </button>
 
             <!-- STEAM -->
+            <div
+              class="arrow-1"
+              style="
+                position: absolute;
+                left: 220px;
+                top: 300px;
+                z-index: 1;
+                transform: rotate(360deg);
+              "
+              v-if="reaktorData.port.steamLed"
+            ></div>
             <button
               v-bind:class="
                 reaktorData.port.steam
@@ -113,6 +151,17 @@
             </button>
 
             <!-- CW -->
+            <div
+              class="arrow-1"
+              style="
+                position: absolute;
+                right: 240px;
+                bottom: 180px;
+                z-index: 3;
+                transform: rotate(90deg);
+              "
+              v-if="reaktorData.port.cw"
+            ></div>
             <button
               v-bind:class="
                 reaktorData.port.cw ? 'btn-success btn-sm' : 'btn-danger btn-sm'
@@ -147,6 +196,17 @@
             </button>
 
             <!-- CCW -->
+            <div
+              class="arrow-1"
+              style="
+                position: absolute;
+                right: 130px;
+                bottom: 180px;
+                z-index: 3;
+                transform: rotate(90deg);
+              "
+              v-if="reaktorData.port.ccw"
+            ></div>
             <button
               v-bind:class="
                 reaktorData.port.ccw
@@ -178,6 +238,16 @@
             </button>
 
             <!-- DRAIN 1 -->
+            <div
+              class="arrow-1"
+              style="
+                position: absolute;
+                right: 260px;
+                bottom: 105px;
+                z-index: 3;
+              "
+              v-if="reaktorData.port.drainTop"
+            ></div>
             <button
               v-bind:class="
                 reaktorData.port.drainTop
@@ -196,6 +266,11 @@
             </button>
 
             <!-- DRAIN 2 -->
+            <div
+              class="arrow-1"
+              style="position: absolute; right: 230px; bottom: 10px; z-index: 3"
+              v-if="reaktorData.port.drainBottom"
+            ></div>
             <button
               v-bind:class="
                 reaktorData.port.drainBottom
@@ -358,5 +433,31 @@ export default {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+.arrow-1 {
+  width: 40px;
+  height: 20px;
+  display: flex;
+}
+.arrow-1:before {
+  content: "";
+  background: currentColor;
+  width: 15px;
+  clip-path: polygon(
+    0 10px,
+    calc(100% - 15px) 10px,
+    calc(100% - 15px) 0,
+    100% 50%,
+    calc(100% - 15px) 100%,
+    calc(100% - 15px) calc(100% - 10px),
+    0 calc(100% - 10px)
+  );
+  animation: a1 1s infinite linear;
+}
+@keyframes a1 {
+  90%,
+  100% {
+    flex-grow: 1;
+  }
 }
 </style>

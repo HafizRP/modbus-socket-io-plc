@@ -3,7 +3,6 @@ const Modbus = require("jsmodbus");
 const net = require("net");
 const socket = new net.Socket();
 const client = new Modbus.client.TCP(socket, 1);
-client.setTimeout = 2000;
 const options = {
   host: "10.10.10.10",
   port: 502,
@@ -40,6 +39,7 @@ const connect = () => {
     console.log("Connected");
     io.emit("status", "connected");
     data();
+    coils();
   } catch (error) {
     retrying = true;
   }
@@ -59,58 +59,57 @@ socket.on("close", async () => {
         console.log("Reconnecting...");
         io.emit("status", "reconnecting...");
       }
+      retrying = false;
       setTimeout(makeConnection(), 1000);
-    }, 2000);
+    }, 100);
   } catch (error) {
     console.error;
   }
   // Trying to reconnect
 });
 
-var lock = false;
 // Compile data and push it to front-end
 function data() {
-  retrying = false;
   setInterval(function () {
-    try {
-      client
-        .readCoils(1 - 1, 25)
-        .then((result) => {
-          io.emit("coils", result.response.body.valuesAsArray);
-
-          // io.emit(
-          //   "valve1",
-          //   Boolean(result.response.body.valuesAsArray[17 - 1])
-          // );
-          // io.emit(
-          //   "valve2",
-          //   Boolean(result.response.body.valuesAsArray[18 - 1])
-          // );
-          // io.emit(
-          //   "steam",
-          //   Boolean(result.response.body.valuesAsArray[19 - 1])
-          // );
-          // console.log(result.response.body.valuesAsArray[20 - 1]);
-
-          // io.emit("cw", result.response.body.valuesAsArray);
-        })
-        .catch((err) => {
-          console.log("1");
-          console.error;
-        });
-
-      // Temperature and Pressure
-      client.readHoldingRegisters(1 - 1, 6).then(function (resp) {
-        // console.log(resp.response.body.values[0]);
-        io.emit("registers", resp.response.body.values);
-        // io.emit("data1", resp.response.body.values[0]);
-        // io.emit("data2", resp.response.body.values[1]);
-        io.emit("status", "connected");
+    client
+      .readHoldingRegisters(1 - 1, 6)
+      .then((result) => {
+        io.emit("registers", result.response.body.values);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    } catch (error) {
-      console.log("2");
-      console.log(error);
-    }
+  }, 100);
+}
+
+function coils() {
+  setInterval(() => {
+    client
+      .readCoils(1 - 1, 25)
+      .then((result) => {
+        io.emit("coils", result.response.body.valuesAsArray);
+
+        // io.emit(
+        //   "valve1",
+        //   Boolean(result.response.body.valuesAsArray[17 - 1])
+        // );
+        // io.emit(
+        //   "valve2",
+        //   Boolean(result.response.body.valuesAsArray[18 - 1])
+        // );
+        // io.emit(
+        //   "steam",
+        //   Boolean(result.response.body.valuesAsArray[19 - 1])
+        // );
+        // console.log(result.response.body.valuesAsArray[20 - 1]);
+
+        // io.emit("cw", result.response.body.valuesAsArray);
+      })
+      .catch((err) => {
+        retrying = true;
+        console.log("1");
+        console.log(err);
+      });
   }, 100);
 }
 
@@ -126,6 +125,7 @@ process.on("uncaughtException", (err) => {
 
 socket.connect(options);
 connect();
+coils();
 
 server.listen(3000, () => {
   console.log("listening on *:3000");

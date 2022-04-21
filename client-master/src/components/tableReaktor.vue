@@ -83,10 +83,6 @@ export default {
       target: null,
     };
   },
-  created() {
-    this.$store.dispatch("data");
-    this.$store.dispatch("status");
-  },
   methods: {
     submit() {
       this.dataTarget.Indicator = this.target;

@@ -13,7 +13,7 @@ export default new Vuex.Store({
     data: {
       temp: null,
       press: null,
-      status: false,
+      status: null,
       port: {
         valve1: false,
         cwr: false,
@@ -77,43 +77,43 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    data({ dispatch }) {
-      socket.on("data", (data) => {
+    data({ dispatch, getters }) {
+      socket.on("registers", (data) => {
+        dispatch("getTemp", data[0]);
+        dispatch("getPress", data[1]);
+        dispatch("getStatus", true);
+      });
+
+      socket.on("coils", (data) => {
         try {
-          dispatch("getTemp", data[0]);
-          dispatch("getPress", data[1]);
-          dispatch("getStatus", true);
+          dispatch("getValve", Boolean(data[17 - 1]));
+          dispatch("getCWR", Boolean(data[18 - 1]));
+          dispatch("getSteam", Boolean(data[19 - 1]));
+          dispatch("getSteamLed", Boolean(data[19 - 1]));
+
+          dispatch("getCW", Boolean(data[20 - 1]));
+          dispatch("getCWLed", Boolean(data[20 - 1]));
+
+          dispatch("getCCW", Boolean(data[21 - 1]));
+          dispatch("getCCWLed", Boolean(data[21 - 1]));
+
+          dispatch("getDrainTop", Boolean(data[22 - 1]));
+          dispatch("getDrainBottom", Boolean(data[23 - 1]));
+          dispatch(
+            "getDrainLed",
+            getters.reaktor.port.drainTop || getters.reaktor.port.drainBottom
+              ? true
+              : false
+          );
         } catch (error) {}
       });
-    },
 
-    status({ dispatch }) {
       socket.on("status", (data) => {
-        try {
-          if ("reconnecting..." == data) {
-            dispatch("getStatus", false);
-          } else {
-            dispatch("getStatus", true);
-          }
-        } catch (error) {}
-      });
-    },
-
-    valve1({ dispatch }) {
-      socket.on("valve1", (data) => {
-        try {
-          dispatch("getValve", data);
-        } catch (error) {
-          console.log(error);
+        if ("reconnecting..." == data) {
+          dispatch("getStatus", false);
+        } else {
+          dispatch("getStatus", true);
         }
-      });
-    },
-
-    CWR({ dispatch }) {
-      socket.on("valve2", (data) => {
-        try {
-          dispatch("getCWR", data);
-        } catch (error) {}
       });
     },
 
@@ -146,6 +146,12 @@ export default new Vuex.Store({
     },
     getCWLed({ commit }, CWLed) {
       commit("setCWLed", CWLed);
+    },
+    getCCW({ commit }, CCW) {
+      commit("setCCW", CCW);
+    },
+    getCCWLed({ commit }, CCWLed) {
+      commit("setCCWLed", CCWLed);
     },
     getDrainTop({ commit }, drainTop) {
       commit("setDrainTop", drainTop);

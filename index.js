@@ -67,56 +67,51 @@ socket.on("close", async () => {
   // Trying to reconnect
 });
 
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
 var lock = false;
 // Compile data and push it to front-end
-async function data() {
+function data() {
   retrying = false;
-  try {
-    setInterval(function () {
-      if (lock === false) {
-        lock = true;
-        // client.writeSingleRegister(1 - 1, inc);
-        client
-          .readCoils(17 - 1, 1)
-          .then((result) => {
-            // console.log(Boolean(result.response.body.values[0]));
-            io.emit("valve1", Boolean(result.response.body.values[0]));
-          })
-          .catch((err) => {
-            retrying = true;
-            console.log("read plc");
-            console.log(err);
-          });
-        client
-          .readCoils(18 - 1, 1)
-          .then((result) => {
-            console.log(Boolean(result.response.body.values[0]));
-            io.emit("valve2", Boolean(result.response.body.values[0]));
-          })
-          .catch((err) => {
-            retrying = true;
-          });
+  setInterval(function () {
+    try {
+      client
+        .readCoils(1 - 1, 25)
+        .then((result) => {
+          io.emit("coils", result.response.body.valuesAsArray);
 
-        client.readHoldingRegisters(1 - 1, 6).then(function (resp) {
-          // console.log(resp.response.body.values[0]);
-          io.emit("data", resp.response.body.values);
-          io.emit("data1", resp.response.body.values[0]);
-          io.emit("data2", resp.response.body.values[1]);
-          io.emit("status", "connected");
+          // io.emit(
+          //   "valve1",
+          //   Boolean(result.response.body.valuesAsArray[17 - 1])
+          // );
+          // io.emit(
+          //   "valve2",
+          //   Boolean(result.response.body.valuesAsArray[18 - 1])
+          // );
+          // io.emit(
+          //   "steam",
+          //   Boolean(result.response.body.valuesAsArray[19 - 1])
+          // );
+          // console.log(result.response.body.valuesAsArray[20 - 1]);
+
+          // io.emit("cw", result.response.body.valuesAsArray);
+        })
+        .catch((err) => {
+          console.log("1");
+          console.error;
         });
-        lock = false;
-      }
-    }, 100);
-  } catch (error) {
-    retrying = true;
-    console.log(error);
-  }
+
+      // Temperature and Pressure
+      client.readHoldingRegisters(1 - 1, 6).then(function (resp) {
+        // console.log(resp.response.body.values[0]);
+        io.emit("registers", resp.response.body.values);
+        // io.emit("data1", resp.response.body.values[0]);
+        // io.emit("data2", resp.response.body.values[1]);
+        io.emit("status", "connected");
+      });
+    } catch (error) {
+      console.log("2");
+      console.log(error);
+    }
+  }, 100);
 }
 
 // Connection ended

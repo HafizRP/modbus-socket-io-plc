@@ -20,9 +20,11 @@
           <span class="centered-noborder temptext text-center"
             >Temperature</span
           >
-          <h4 class="centered text-body temp text-center">
-            {{ reaktorData.temp }} °C
-          </h4>
+          <Transition>
+            <h4 class="centered text-body temp text-center">
+              {{ reaktorData.temp }} °C
+            </h4>
+          </Transition>
 
           <!-- Pressure -->
           <div class="v2">
@@ -57,7 +59,7 @@
         /> -->
 
           <!-- Buttons -->
-          <div>
+          <div v-if="reaktorData.status">
             <!-- CCWR -->
             <button
               v-bind:class="
@@ -86,27 +88,35 @@
 
             <!-- STEAM -->
             <button
-              v-bind:class="steam ? 'btn-success btn-sm' : 'btn-danger btn-sm'"
+              v-bind:class="
+                reaktorData.port.steam
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
+              "
               style="position: absolute; left: 125px; top: 220px; z-index: 1"
               disabled
             >
-              {{ steam ? "Open" : "Close" }}
+              {{ reaktorData.port.steam ? "Open" : "Close" }}
             </button>
 
             <!-- STEAM LED -->
             <button
               v-bind:class="
-                steamIndicator ? 'btn-success btn-sm' : 'btn-danger btn-sm'
+                reaktorData.port.steamLed
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
               "
               style="position: absolute; left: 208px; top: 230px; z-index: 1"
               disabled
             >
-              {{ steamIndicator ? "On" : "Off" }}
+              {{ reaktorData.port.steamLed ? "On" : "Off" }}
             </button>
 
             <!-- CW -->
             <button
-              v-bind:class="cw ? 'btn-success btn-sm' : 'btn-danger btn-sm'"
+              v-bind:class="
+                reaktorData.port.cw ? 'btn-success btn-sm' : 'btn-danger btn-sm'
+              "
               style="
                 position: absolute;
                 right: 250px;
@@ -115,13 +125,15 @@
               "
               disabled
             >
-              {{ cw ? "Open" : "Close" }}
+              {{ reaktorData.port.cw ? "Open" : "Close" }}
             </button>
 
             <!-- CW LED -->
             <button
               v-bind:class="
-                cwIndicator ? 'btn-success btn-sm' : 'btn-danger btn-sm'
+                reaktorData.port.cwLed
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
               "
               style="
                 position: absolute;
@@ -131,12 +143,16 @@
               "
               disabled
             >
-              {{ cwIndicator ? "On" : "Off" }}
+              {{ reaktorData.port.cwLed ? "On" : "Off" }}
             </button>
 
             <!-- CCW -->
             <button
-              v-bind:class="ccw ? 'btn-success btn-sm' : 'btn-danger btn-sm'"
+              v-bind:class="
+                reaktorData.port.ccw
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
+              "
               style="
                 position: absolute;
                 right: 137px;
@@ -145,23 +161,29 @@
               "
               disabled
             >
-              {{ ccw ? "Open" : "Close" }}
+              {{ reaktorData.port.ccw ? "Open" : "Close" }}
             </button>
 
             <!-- CcW LED -->
             <button
               v-bind:class="
-                ccwIndicator ? 'btn-success btn-sm' : 'btn-danger btn-sm'
+                reaktorData.port.ccwLed
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
               "
               style="position: absolute; right: 80px; bottom: 170px; z-index: 3"
               disabled
             >
-              {{ ccwIndicator ? "On" : "Off" }}
+              {{ reaktorData.port.ccwLed ? "On" : "Off" }}
             </button>
 
             <!-- DRAIN 1 -->
             <button
-              v-bind:class="drain ? 'btn-success btn-sm' : 'btn-danger btn-sm'"
+              v-bind:class="
+                reaktorData.port.drainTop
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
+              "
               style="
                 position: absolute;
                 right: 115px;
@@ -170,26 +192,32 @@
               "
               disabled
             >
-              {{ drain ? "Open" : "Close" }}
+              {{ reaktorData.port.drainTop ? "Open" : "Close" }}
             </button>
 
             <!-- DRAIN 2 -->
             <button
-              v-bind:class="drain2 ? 'btn-success btn-sm' : 'btn-danger btn-sm'"
+              v-bind:class="
+                reaktorData.port.drainBottom
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
+              "
               style="position: absolute; right: 160px; bottom: 0px; z-index: 2"
               disabled
             >
-              {{ drain2 ? "Open" : "Close" }}
+              {{ reaktorData.port.drainBottom ? "Open" : "Close" }}
             </button>
 
             <button
               v-bind:class="
-                ccwIndicator ? 'btn-success btn-sm' : 'btn-danger btn-sm'
+                reaktorData.port.drainLed
+                  ? 'btn-success btn-sm'
+                  : 'btn-danger btn-sm'
               "
               style="position: absolute; right: 73px; bottom: 50px; z-index: 3"
               disabled
             >
-              {{ ccwIndicator ? "On" : "Off" }}
+              {{ reaktorData.port.drainLed ? "On" : "Off" }}
             </button>
           </div>
         </div>
@@ -224,9 +252,8 @@ export default {
 
   methods: {},
 
-  created() {
-    this.$store.dispatch("valve1");
-    this.$store.dispatch("CWR");
+  beforeMount() {
+    this.$store.dispatch("data");
   },
 
   mounted() {},
@@ -320,5 +347,16 @@ export default {
   right: 200px;
   bottom: 30px;
   z-index: 2;
+}
+
+/* we will explain what these classes do next! */
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

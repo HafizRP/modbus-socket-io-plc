@@ -1,27 +1,5 @@
 <template>
   <div class="container-fluid">
-    <form class="form-inline mb-2 text-center">
-      <label class="mx-1" for="target">Target : </label>
-      <input
-        type="text"
-        class="mx-1"
-        id="target"
-        placeholder="1-1000 Pcs"
-        v-model="target"
-      />
-      <button
-        type="submit"
-        class="btn btn-primary btn-sm mx-1"
-        @click.prevent="submit"
-      >
-        Submit
-      </button>
-    </form>
-
-    <h4 class="text-center" v-if="dataTarget.Indicator">
-      Target Produksi : {{ dataTarget.Numbers }}
-    </h4>
-
     <table class="table table-bordered text-center pt-2">
       <thead>
         <tr>

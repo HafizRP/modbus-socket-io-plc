@@ -73,7 +73,7 @@
                 left: 240px;
                 top: 25px;
                 z-index: 4;
-                transform: rotate(360deg);
+                transform: rotate(180deg);
               "
               v-if="reaktorData.port.valve1"
             ></div>
@@ -97,7 +97,7 @@
                 left: 240px;
                 top: 130px;
                 z-index: 1;
-                transform: rotate(360deg);
+                transform: rotate(180deg);
               "
               v-if="reaktorData.port.cwr"
             ></div>
@@ -302,40 +302,25 @@
 </template>
 
 <script>
-import io from "socket.io-client";
-
-var socket = io("http://localhost:3000");
-
 export default {
   name: "HelloWorld",
   data() {
-    return {
-      // ccwr: true,
-      // cwr: true,
-      // steam: false,
-      // steamIndicator: false,
-      // cw: false,
-      // cwIndicator: false,
-      // ccw: false,
-      // ccwIndicator: false,
-      // drain: true,
-      // drain2: true,
-      // drainIndicator: false,
-      // steamIndicator: true,
-    };
+    return {};
   },
 
   methods: {},
 
-  beforeMount() {
+  mounted() {
+    // this.$store.dispatch("auth/Login");
     this.$store.dispatch("data");
   },
-
-  mounted() {},
 
   computed: {
     reaktorData() {
       return this.$store.getters.reaktor;
+    },
+    loggedIn() {
+      return this.$store.state.auth.status.loggedIn;
     },
   },
 };

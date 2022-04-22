@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import io from "socket.io-client";
+import { auth } from "./auth.module";
 import { getTemp, getPress } from "../plugins/webSocket";
 
 let socket = io("http://localhost:3000");
@@ -167,5 +168,8 @@ export default new Vuex.Store({
     reaktor: function (state) {
       return state.data;
     },
+  },
+  modules: {
+    auth,
   },
 });

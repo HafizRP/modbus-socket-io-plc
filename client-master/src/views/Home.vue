@@ -1,7 +1,6 @@
 <template>
   <div class="pt-5">
     <div class="container">
-      <!-- <HelloWorld class="" /> -->
       <Login />
     </div>
   </div>
@@ -17,6 +16,14 @@ export default {
   components: {
     Login,
     HelloWorld,
+  },
+  computed: {
+    reaktor() {
+      return this.$store.getters.reaktor;
+    },
+    loggedIn() {
+      return this.$store.state.auth.status.loggedIn;
+    },
   },
 };
 </script>
